@@ -419,17 +419,36 @@
   width: 200px;
   height: auto;
 }
+
+      .buy-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 10px;
+    border-radius: 8px;
+  }
+
+  .buy-button:hover {
+    background-color: #45a049;
+  }
   </style>
 </head>
 <body>
   <div class="container">
-    <header>
-      <div class="logo">KEY EXPERIMENT</div>
-      <button class="connect-wallet" id="connectWallet">
-        <i class="fas fa-wallet"></i>
-        Connect Wallet
-      </button>
-    </header>
+<header>
+  <div class="logo">KEY EXPERIMENT</div>
+  <button class="connect-wallet" id="connectWallet">
+    <i class="fas fa-wallet"></i>
+    Connect Wallet
+  </button>
+  <button class="buy-button" onclick="window.location.href='https://yourbuylink.com'">
+    Buy Now
+  </button>
+</header>
+
     
     <section class="hero">
       <h1>Find the Secret Key</h1>
@@ -477,9 +496,9 @@
     <footer>
       <div class="footer-content">
         <div class="social-links">
-          <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-          <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
-          <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+          <a href="https://x.com/KeyExperiment" class="social-link"><i class="fab fa-twitter"></i></a>
+          <a href="https://t.me/keyexp" class="social-link"><i class="fab fa-telegram"></i></a>
+          <a href="https://pump.fun/profile/5r3y1FnWv8jp6KFJwckufcUG4DYoBQQknsAxNBiHMJ7P" class="social-link"><i class="fab fa-web"></i></a>
         </div>
         <div class="copyright">© 2025 Key Experiment. All rights reserved.</div>
       </div>
