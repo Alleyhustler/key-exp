@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Key Experiment</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-bg: #0f0f0f;
+      --secondary-bg: #1a1a1a;
+      --text-primary: #ffffff;
+      --text-secondary: #aaaaaa;
+      --accent: #303030;
+      --accent-hover: #404040;
+      --box-unlocked: #333333;
+      --box-locked: #222222;
+      --box-selected: #454545;
+      --box-highlight: rgba(255, 255, 255, 0.05);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--primary-bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    
+    /* Header Section */
+    header {
+      padding: 1.5rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--accent);
+    }
+    
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #fff, #aaa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .connect-wallet {
+      background-color: var(--accent);
+      color: var(--text-primary);
+      border: none;
+      padding: 0.7rem 1.2rem;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .connect-wallet:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+    
+    /* Hero Section */
+    .hero {
+      padding: 4rem 0;
+      text-align: center;
+    }
+    
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      letter-spacing: -1px;
+    }
+    
+    .hero p {
+      max-width: 600px;
+      margin: 0 auto;
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    
+    /* Jackpot Section */
+    .jackpot-section {
+      padding: 2rem 0;
+      text-align: center;
+      background-color: var(--secondary-bg);
+      border-radius: 8px;
+      margin: 2rem 0;
+    }
+    
+    .jackpot-amount {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .sol-icon {
+      width: 24px;
+      height: 24px;
+      opacity: 0.8;
+    }
+    
+    .timer {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      margin-top: 1rem;
+    }
+    
+    /* Boxes Grid */
+    .boxes-section {
+      padding: 3rem 0;
+    }
+    
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    
+    .boxes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .box {
+      aspect-ratio: 1;
+      background-color: var(--box-locked);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--box-highlight);
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+    
+    .box:hover::before {
+      transform: translateY(0);
+    }
+    
+    .box.selected {
+      background-color: var(--box-selected);
+      transform: scale(1.02);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .box.unlocked {
+      background-color: var(--box-unlocked);
+    }
+    
+    .box i {
+      font-size: 1.8rem;
+      opacity: 0.7;
+    }
+    
+    .box-number {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      font-size: 0.8rem;
+      opacity: 0.6;
+    }
+    
+    .vote-count {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+    
+    /* Key Graph */
+    .key-graph-section {
+      padding: 3rem 0;
+    }
+    
+    .graph-container {
+      background-color: var(--secondary-bg);
+      border-radius: 8px;
+      padding: 1.5rem;
+      height: 300px;
+      position: relative;
+    }
+    
+    .bar-container {
+      display: flex;
+      height: 100%;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: 30px;
+    }
+    
+    .bar {
+      width: 5%;
+      background-color: var(--accent);
+      border-radius: 4px 4px 0 0;
+      position: relative;
+      transition: height 0.5s ease;
+    }
+    
+    .bar-label {
+      position: absolute;
+      top: -25px;
+      width: 100%;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    
+    /* Voting System */
+    .voting-section {
+      padding: 3rem 0;
+      text-align: center;
+    }
+    
+    .vote-button {
+      background-color: var(--accent);
+      color: var(--text-primary);
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .vote-button:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+    
+    .vote-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* Footer */
+    footer {
+      padding: 3rem 0;
+      border-top: 1px solid var(--accent);
+      margin-top: 3rem;
+    }
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .social-links {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .social-link {
+      color: var(--text-secondary);
+      font-size: 1.2rem;
+      transition: color 0.2s ease;
+    }
+    
+    .social-link:hover {
+      color: var(--text-primary);
+    }
+    
+    .copyright {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .modal-content {
+      background-color: var(--secondary-bg);
+      border-radius: 8px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+    
+    .modal.active .modal-content {
+      transform: translateY(0);
+    }
+    
+    .modal-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .modal-text {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+    
+    .close-modal {
+      background-color: var(--accent);
+      color: var(--text-primary);
+      border: none;
+      padding: 0.7rem 1.2rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    /* Animations */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1rem;
+      }
+      
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+      
+      .hero p {
+        font-size: 1rem;
+      }
+      
+      .boxes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      }
+      
+      .footer-content {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .boxes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      }
+      
+      .jackpot-amount {
+        font-size: 2rem;
+      }
+    }
+    .logo-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.site-logo {
+  width: 200px;
+  height: auto;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">KEY EXPERIMENT</div>
+      <button class="connect-wallet" id="connectWallet">
+        <i class="fas fa-wallet"></i>
+        Connect Wallet
+      </button>
+    </header>
+    
+    <section class="hero">
+      <h1>Find the Secret Key</h1>
+      <p>Every 15 minutes, the community votes to unlock one box. One contains the private key to claim the SOL jackpot. Choose wisely.</p>
+    </section>
+    
+    <!-- Logo Section -->
+    <div class="logo-container">
+      <img src="image-removebg-preview (12) (1).png" alt="Site Logo" class="site-logo">
+    </div>
+    
+    
+    <section class="jackpot-section">
+      <h2>Current Jackpot</h2>
+      <div class="jackpot-amount">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24"> <path d="M18.5009 8.25H4.00093C3.33093 8.25 2.73094 7.88 2.44094 7.28C2.14094 6.68 2.20091 5.98 2.60091 5.45L4.10091 3.45C4.43091 3.01 4.95093 2.75 5.50093 2.75H20.0009C20.6709 2.75 21.2709 3.12 21.5609 3.72C21.8609 4.32 21.801 5.02 21.401 5.55L19.901 7.55C19.571 7.99 19.0509 8.25 18.5009 8.25ZM5.50093 4.25C5.42093 4.25 5.35092 4.29 5.30092 4.35L3.80092 6.35C3.72092 6.46 3.75096 6.56 3.78096 6.61C3.81096 6.66 3.87093 6.75 4.00093 6.75H18.5009C18.5809 6.75 18.6509 6.71 18.7009 6.65L20.2009 4.65C20.2809 4.54 20.2509 4.44 20.2209 4.39C20.1909 4.34 20.1309 4.25 20.0009 4.25H5.50093Z" fill="black"></path> <path d="M20.0009 14.75H5.50095C4.95095 14.75 4.43092 14.49 4.10092 14.05L2.60092 12.05C2.20092 11.52 2.14094 10.81 2.43094 10.22C2.73094 9.62 3.33094 9.25 3.99094 9.25H18.4909C19.0409 9.25 19.561 9.51 19.891 9.95L21.391 11.95C21.791 12.48 21.8509 13.19 21.5609 13.78C21.2709 14.38 20.6709 14.75 20.0009 14.75ZM4.00095 10.75C3.87095 10.75 3.80097 10.84 3.78097 10.89C3.75097 10.94 3.72093 11.04 3.80093 11.15L5.30093 13.15C5.35093 13.21 5.42095 13.25 5.50095 13.25H20.0009C20.1309 13.25 20.2009 13.16 20.2209 13.11C20.2509 13.06 20.281 12.96 20.201 12.85L18.701 10.85C18.651 10.79 18.5809 10.75 18.5009 10.75H4.00095Z" fill="black"></path> <path d="M18.5009 21.25H4.00093C3.33093 21.25 2.73094 20.88 2.44094 20.28C2.14094 19.68 2.20091 18.98 2.60091 18.45L4.10091 16.45C4.43091 16.01 4.95093 15.75 5.50093 15.75H20.0009C20.6709 15.75 21.2709 16.12 21.5609 16.72C21.8609 17.32 21.801 18.02 21.401 18.55L19.901 20.55C19.571 20.99 19.0509 21.25 18.5009 21.25ZM5.50093 17.25C5.42093 17.25 5.35092 17.29 5.30092 17.35L3.80092 19.35C3.72092 19.46 3.75096 19.56 3.78096 19.61C3.81096 19.66 3.87093 19.75 4.00093 19.75H18.5009C18.5809 19.75 18.6509 19.71 18.7009 19.65L20.2009 17.65C20.2809 17.54 20.2509 17.44 20.2209 17.39C20.1909 17.34 20.1309 17.25 20.0009 17.25H5.50093Z" fill="black"></path> </svg> 
+        </svg>
+        <span id="jackpotAmount">25.5</span>
+      </div>
+      <div class="timer">Next unlock in <span id="countdown">14:32</span></div>
+    </section>
+    
+    <section class="boxes-section">
+      <h2 class="section-title">Mystery Boxes</h2>
+      <div class="boxes-grid" id="boxesGrid">
+        <!-- Boxes will be generated via JavaScript -->
+      </div>
+    </section>
+    
+    <section class="key-graph-section">
+      <h2 class="section-title">Key Probability Graph</h2>
+      <div class="graph-container">
+        <div class="bar-container" id="keyGraph">
+          <!-- Bars will be generated via JavaScript -->
+        </div>
+      </div>
+    </section>
+    
+    <section class="voting-section">
+      <h2 class="section-title">Cast Your Vote</h2>
+      <p>Selected box: <span id="selectedBox">None</span></p>
+      <button class="vote-button" id="voteButton" disabled>Vote (0.1 SOL)</button>
+    </section>
+    
+    <footer>
+      <div class="footer-content">
+        <div class="social-links">
+          <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+          <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+        </div>
+        <div class="copyright">© 2025 Key Experiment. All rights reserved.</div>
+      </div>
+    </footer>
+  </div>
+  
+  <!-- Modal for notifications -->
+  <div class="modal" id="notificationModal">
+    <div class="modal-content">
+      <h3 class="modal-title" id="modalTitle">Notification</h3>
+      <p class="modal-text" id="modalText">This is a notification message.</p>
+      <button class="close-modal" id="closeModal">Close</button>
+    </div>
+  </div>
+  
+  <!-- JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Configuration
+      const totalBoxes = 20;
+      let selectedBoxId = null;
+      let walletConnected = false;
+      let votesCast = {};
+      let countdownInterval;
+      let nextUnlock = new Date();
+      nextUnlock.setMinutes(nextUnlock.getMinutes() + 15);
+      
+      // DOM Elements
+      const boxesGrid = document.getElementById('boxesGrid');
+      const keyGraph = document.getElementById('keyGraph');
+      const selectedBoxDisplay = document.getElementById('selectedBox');
+      const voteButton = document.getElementById('voteButton');
+      const connectWalletBtn = document.getElementById('connectWallet');
+      const countdownDisplay = document.getElementById('countdown');
+      const modal = document.getElementById('notificationModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalText = document.getElementById('modalText');
+      const closeModalBtn = document.getElementById('closeModal');
+      const jackpotAmount = document.getElementById('jackpotAmount');
+      
+      // Initialize boxes
+      function initializeBoxes() {
+        boxesGrid.innerHTML = '';
+        for (let i = 1; i <= totalBoxes; i++) {
+          const box = document.createElement('div');
+          box.classList.add('box');
+          box.dataset.id = i;
+          
+          const boxNumber = document.createElement('div');
+          boxNumber.classList.add('box-number');
+          boxNumber.textContent = i;
+          
+          const icon = document.createElement('i');
+          icon.classList.add('fas', 'fa-lock');
+          
+          const voteCount = document.createElement('div');
+          voteCount.classList.add('vote-count');
+          voteCount.textContent = '0';
+          
+          box.appendChild(boxNumber);
+          box.appendChild(icon);
+          box.appendChild(voteCount);
+          
+          box.addEventListener('click', () => selectBox(i));
+          
+          boxesGrid.appendChild(box);
+          
+          // Initialize votes
+          votesCast[i] = Math.floor(Math.random() * 10);
+        }
+        
+        updateVoteCounts();
+        initializeKeyGraph();
+      }
+      
+      // Initialize key probability graph
+      function initializeKeyGraph() {
+        keyGraph.innerHTML = '';
+        
+        for (let i = 1; i <= totalBoxes; i++) {
+          const bar = document.createElement('div');
+          bar.classList.add('bar');
+          bar.dataset.id = i;
+          
+          const height = calculateProbability(i);
+          bar.style.height = `${height}%`;
+          
+          const label = document.createElement('div');
+          label.classList.add('bar-label');
+          label.textContent = i;
+          
+          bar.appendChild(label);
+          keyGraph.appendChild(bar);
+        }
+      }
+      
+      // Calculate probability based on votes
+      function calculateProbability(boxId) {
+        const totalVotes = Object.values(votesCast).reduce((a, b) => a + b, 0);
+        if (totalVotes === 0) return 10; // Default height
+        
+        // Inverse probability (fewer votes = higher probability)
+        const boxVotes = votesCast[boxId];
+        const otherVotes = totalVotes - boxVotes;
+        
+        let probability;
+        if (totalVotes > 0) {
+          probability = 100 - ((boxVotes / totalVotes) * 80); // Min 20%, max 100%
+        } else {
+          probability = 50; // Default
+        }
+        
+        return Math.max(10, probability); // Ensure at least 10% height for visibility
+      }
+      
+      // Update vote counts display
+      function updateVoteCounts() {
+        for (const [boxId, votes] of Object.entries(votesCast)) {
+          const box = document.querySelector(`.box[data-id="${boxId}"] .vote-count`);
+          if (box) {
+            box.textContent = votes;
+          }
+        }
+      }
+      
+      // Select a box
+      function selectBox(boxId) {
+        if (!walletConnected) {
+          showNotification('Wallet Required', 'Please connect your wallet to vote.');
+          return;
+        }
+        
+        // Deselect previous box
+        if (selectedBoxId) {
+          const prevBox = document.querySelector(`.box[data-id="${selectedBoxId}"]`);
+          if (prevBox) prevBox.classList.remove('selected');
+        }
+        
+        // Select new box
+        const box = document.querySelector(`.box[data-id="${boxId}"]`);
+        if (box.classList.contains('unlocked')) {
+          showNotification('Already Unlocked', 'This box has already been unlocked.');
+          selectedBoxId = null;
+          selectedBoxDisplay.textContent = 'None';
+          voteButton.disabled = true;
+          return;
+        }
+        
+        box.classList.add('selected');
+        selectedBoxId = boxId;
+        selectedBoxDisplay.textContent = boxId;
+        voteButton.disabled = false;
+      }
+      
+      // Connect wallet function
+      function connectWallet() {
+        // Simulate wallet connection
+        setTimeout(() => {
+          walletConnected = true;
+          connectWalletBtn.innerHTML = '<i class="fas fa-wallet"></i> Connected';
+          connectWalletBtn.style.backgroundColor = '#333';
+          
+          showNotification('Wallet Connected', 'You can now vote for boxes.');
+        }, 800);
+      }
+      
+      // Vote function
+      function vote() {
+        if (!selectedBoxId || !walletConnected) return;
+        
+        // Simulate voting
+        votesCast[selectedBoxId] += 1;
+        updateVoteCounts();
+        
+        // Update graph
+        updateKeyGraph();
+        
+        // Show notification
+        showNotification('Vote Cast', `You have successfully voted for Box #${selectedBoxId}`);
+        
+        // Deselect box
+        const box = document.querySelector(`.box[data-id="${selectedBoxId}"]`);
+        box.classList.remove('selected');
+        selectedBoxId = null;
+        selectedBoxDisplay.textContent = 'None';
+        voteButton.disabled = true;
+        
+        // Update jackpot (simulate burn)
+        const currentJackpot = parseFloat(jackpotAmount.textContent);
+        jackpotAmount.textContent = (currentJackpot + 0.1).toFixed(1);
+      }
+      
+      // Update key graph based on new votes
+      function updateKeyGraph() {
+        for (let i = 1; i <= totalBoxes; i++) {
+          const bar = document.querySelector(`.bar[data-id="${i}"]`);
+          if (bar) {
+            const height = calculateProbability(i);
+            bar.style.height = `${height}%`;
+          }
+        }
+      }
+      
+      // Show notification modal
+      function showNotification(title, message) {
+        modalTitle.textContent = title;
+        modalText.textContent = message;
+        modal.classList.add('active');
+      }
+      
+      // Close notification modal
+      function closeNotification() {
+        modal.classList.remove('active');
+      }
+      
+      // Update countdown timer
+      function updateCountdown() {
+        const now = new Date();
+        const diff = nextUnlock - now;
+        
+        if (diff <= 0) {
+          // Time to unlock a box
+          unlockRandomBox();
+          
+          // Reset timer
+          nextUnlock = new Date();
+          nextUnlock.setMinutes(nextUnlock.getMinutes() + 15);
+        }
+        
+        // Calculate minutes and seconds
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        // Display countdown
+        countdownDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+      
+      // Unlock a random box
+      function unlockRandomBox() {
+        // Determine which box to unlock based on votes
+        let boxToUnlock;
+        
+        // For demo purposes, pick a random box weighted by inverse votes
+        const totalVotes = Object.values(votesCast).reduce((a, b) => a + b, 0);
+        const inverseVotes = {};
+        
+        for (const [boxId, votes] of Object.entries(votesCast)) {
+          // Skip already unlocked boxes
+          const box = document.querySelector(`.box[data-id="${boxId}"]`);
+          if (box && box.classList.contains('unlocked')) continue;
+          
+          // Calculate inverse votes (fewer votes = higher chance)
+          if (totalVotes > 0) {
+            inverseVotes[boxId] = 1 - (votes / totalVotes);
+          } else {
+            inverseVotes[boxId] = 1;
+          }
+        }
+        
+        // Normalize and create weighted array
+        const totalInverse = Object.values(inverseVotes).reduce((a, b) => a + b, 0);
+        const weightedBoxes = [];
+        
+        for (const [boxId, weight] of Object.entries(inverseVotes)) {
+          const normalizedWeight = weight / totalInverse;
+          const numEntries = Math.floor(normalizedWeight * 100);
+          
+          for (let i = 0; i < numEntries; i++) {
+            weightedBoxes.push(boxId);
+          }
+        }
+        
+        // Pick random box from weighted array
+        if (weightedBoxes.length > 0) {
+          const randomIndex = Math.floor(Math.random() * weightedBoxes.length);
+          boxToUnlock = weightedBoxes[randomIndex];
+          
+          // Unlock the box
+          const box = document.querySelector(`.box[data-id="${boxToUnlock}"]`);
+          if (box) {
+            box.classList.add('unlocked');
+            const icon = box.querySelector('i');
+            icon.classList.remove('fa-lock');
+            
+            // 5% chance the key is found
+            const keyFound = Math.random() < 0.05;
+            
+            if (keyFound) {
+              icon.classList.add('fa-key');
+              showNotification('Key Found!', `The secret key was found in Box #${boxToUnlock}! The jackpot has been claimed.`);
+              
+              // Reset jackpot
+              jackpotAmount.textContent = '5.0';
+              
+              // Reset all boxes after a delay
+              setTimeout(() => {
+                resetAllBoxes();
+              }, 5000);
+            } else {
+              icon.classList.add('fa-box-open');
+            }
+          }
+        }
+      }
+      
+      // Reset all boxes
+      function resetAllBoxes() {
+        const boxes = document.querySelectorAll('.box');
+        boxes.forEach(box => {
+          box.classList.remove('unlocked');
+          const icon = box.querySelector('i');
+          icon.className = 'fas fa-lock';
+        });
+        
+        // Reset votes
+        for (let i = 1; i <= totalBoxes; i++) {
+          votesCast[i] = Math.floor(Math.random() * 5);
+        }
+        
+        updateVoteCounts();
+        updateKeyGraph();
+      }
+      
+      // Event listeners
+      connectWalletBtn.addEventListener('click', connectWallet);
+      voteButton.addEventListener('click', vote);
+      closeModalBtn.addEventListener('click', closeNotification);
+      
+      // Initialize
+      initializeBoxes();
+      
+      // Start countdown
+      updateCountdown();
+      countdownInterval = setInterval(updateCountdown, 1000);
+      
+      // Simulated activity
+      setInterval(() => {
+        // Random vote activity
+        const randomBox = Math.floor(Math.random() * totalBoxes) + 1;
+        votesCast[randomBox] += 1;
+        updateVoteCounts();
+        updateKeyGraph();
+      }, 5000);
+    });
+  </script>
+</body>
+</html>
